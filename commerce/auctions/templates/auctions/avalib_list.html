@@ -1,0 +1,47 @@
+{% extends 'auctions/layout.html' %}
+
+
+{% block body %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">{{ listing.title }}</h5>
+        </div>
+        <div class="card-body">
+            <img src="{{ listing.img }}" alt="Listing image">
+            <p class="card-text">{{ listing.description }}</p>
+            <p class="card-text">Initial Price: ${{ listing.price }}</p>
+        </div>
+        
+            {% for bid in bids %}
+                {% if bid.listing == listing %}
+                    <ul>    
+                        <li>{{ bid.bidder.username }} - ${{ bid.amount }}</li>
+                    </ul>
+                {% endif %}
+            {% endfor %}
+        
+    </div>
+    
+        {% if user.is_authenticated %}
+            {% if not request.user == listing.user %}
+                <div>
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{ listing.id }}">
+                        <input type="number" id="bid" name="bid" min="0" max="1000000" required >
+                        <input type="submit" value="Place bid">
+                    </form>
+                    
+                </div>
+            {% endif %}
+            
+        {% endif %}
+{% endblock %}

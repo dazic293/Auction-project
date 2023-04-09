@@ -1,0 +1,33 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <H1>List your item</H1>
+    <form action="{% url 'listing' %}" method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <input autofocus class="form-control" type="text" name="title" placeholder="Item's title">
+        </div>
+        <div class="form-group">
+            <input type="text" autofocus class="form-control" name="description" placeholder="Item's description">
+        </div>
+        <div>Initial bid</div>
+        <div>            
+            <input type="number" id="price" name="price" min="0" max="1000000" required>
+        </div>
+        <div>
+            <label for="img">Image URL:</label>
+            <input type="url" id="img" name="img" placeholder="https://example.com/image.png">
+        </div>
+        <div>
+            <input type="submit" value="Confirm">
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% for listing in listings %}
+        {% if listing.inactive == False %}
+        <div class="card">
+            <a href="{% url 'avalib_list' listing.id %}">
+                <div class="card-header">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                </div>
+            </a>
+            <div class="card-body">
+                <img src="{{ listing.img }}" alt="Listing image" ismap>
+                <p class="card-text">{{ listing.description }}</p>
+                <p class="card-text">Price: ${{ listing.price }}</p>
+            </div>
+            {% if user.is_authenticated %}
+                <div>
+                    <form action="{% url 'sell_listing' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Sell">
+                    </form>
+                </div>
+                <div>
+                    <form action="{% url 'del_listing' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" value="Delist">
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        {% else %}
+            <H4>Sold</H4>
+            <div class="card-header">
+                <h5 class="card-title">{{ listing.title }}</h5>
+            </div>
+            <div class="card-body">
+                <img src="{{ listing.img }}" alt="Listing image" ismap>
+                <p class="card-text">{{ listing.description }}</p>
+                <p class="card-text">Price: ${{ listing.price }}</p>
+            </div>
+        {% endif %}
+    {% endfor %}
+
+
+{% endblock %}
