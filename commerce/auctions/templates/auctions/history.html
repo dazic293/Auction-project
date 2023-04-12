@@ -3,12 +3,13 @@
 {% block body %}
     {% for listing in listings %}
         <div class="card-header">
-            <h5 class="card-title">{{ listing.title }}</h5>
+            <h5 class="card-title">{{ listing.listing.title }}</h5>
         </div>
         <div class="card-body">
             <img src="{{ listing.img }}" alt="Listing image" ismap>
-            <p class="card-text">{{ listing.description }}</p>
-            <p class="card-text">Price: ${{ listing.price }}</p>
+            <p class="card-text">Seller: {{ listing.seller}}</p>
+            <p class="card-text">Buyer: {{ listing.buyer }}</p>
+            <p class="card-text">Bid: {{ listing.soled_price }} $</p>
         </div>
     {% endfor %}
 {% endblock %}

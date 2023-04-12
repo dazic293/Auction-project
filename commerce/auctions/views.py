@@ -4,9 +4,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import User, Listing, Bid, Category, Comment, Soled
+from .models import User, Listing, Bid, Category, Comment, Soled, Watchlist
 from django.contrib import messages
-
+from django.core.exceptions import ObjectDoesNotExist
 
 def avalib_list(request, id):
     listing = Listing.objects.get(id=id)
@@ -36,6 +36,11 @@ def avalib_list(request, id):
 def index(request):
     listings = Listing.objects.all()
     bids = Bid.objects.all()
+    if request.method == "POST":
+        listing = Listing.objects.filter(id=id)
+        watchlist = Watchlist.objects.create(listing = listing, user=request.user )
+        watchlist.save()
+        return redirect(request, "auctions/watchlist.html", id=id)
     return render(request, "auctions/index.html", {
         "listings": listings,
         "bids": bids
@@ -54,11 +59,20 @@ def my_listings(request):
 @login_required
 def sell_listing(request, id):
     listing = Listing.objects.get(id=id)
-
+    try:
+        amount = Bid.objects.get(listing=listing)
+        value = amount.amount
+    except ObjectDoesNotExist :
+        value = False
     if request.method == 'POST':
-        listing.inactive = True
-        listing.save()
-        messages.success(request, "Listing has been sold.")
+        if value:
+            listing.inactive = True
+            listing.save()
+            sold = Soled.objects.create(buyer=request.user, seller=listing.user,  listing=listing, soled_price=Bid.objects.get(listing=listing))
+            sold.save()
+            messages.success(request, "Listing has been sold.")
+        else:
+            messages.error(request, "There is no bid  ")
         return redirect('my_listings')
     return render(request, 'auctions/sell_listing.html', {'listing': listing})
 
@@ -67,10 +81,10 @@ def del_listing(request, id):
     listing=Listing.objects.get(id=id)
 
     if request.method == 'POST':
-        listing.inactive = True
-        listing.save()
+        #listing.inactive = True
+        listing.delete()
         messages.success(request, "Listing has been deleted")
-        return redirect('my_listing')
+        return redirect('my_listings')
     return render(request, 'auctions/del_listing.html', {'listing':listing})
 
 
@@ -96,7 +110,8 @@ def login_view(request):
 
 @login_required
 def history (request):
-    return render(request, "auctions/history.html", {"listings":Listing.objects.filter(inactive=True)})
+
+    return render(request, "auctions/history.html", {"listings":Soled.objects.all()})
 
 
 def logout_view(request):
@@ -160,8 +175,11 @@ def listing(request):
 
 
 @login_required
-def watch_list (request):
-    pass
+def watchlist (request):
+    return render(request, "auctions/watchlist.html", {
+        "listings": Listing.objects.all(),
+        "bids": Bid.objects.all()
+    })
 
 
 

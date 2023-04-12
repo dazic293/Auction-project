@@ -51,8 +51,8 @@ class Bid (models.Model):
 class Soled (models.Model):
     buyer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name = "buyer", default=None)
     seller = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name = "seller", default=None)
-    listing = models.ForeignKey(Listing, on_delete=models.PROTECT, related_name = "item", default=None)
-    soled_price = models.ForeignKey(Bid, on_delete=models.PROTECT, default=None)
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name = "item", default=None)
+    soled_price = models.ForeignKey(Bid, on_delete=models.CASCADE, default=None)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
 def __str__(self):
@@ -69,3 +69,12 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.commenter.username} - {self.content}"
+    
+class Watchlist(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name = "watchlist", default=None)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Listing {self.listing} in watchlist user: {self.user.username}"
+    

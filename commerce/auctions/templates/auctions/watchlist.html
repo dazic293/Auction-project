@@ -19,14 +19,10 @@
                                 <li>{{ bid.bidder.username }} - ${{ bid.amount }}</li>
                             {% endif %}
                         {% endfor %}
-                        
                     </ul>
                     <p class="card-text">Price: ${{ listing.price }}</p>
                 </div>
-                <form action="{% url 'watchlist' %}" method="post">
-                    {% csrf_token %}
-                    <input type="submit" value="Add to watchlist">
-                </form>
+                
             </div>
         {% else %}
             
